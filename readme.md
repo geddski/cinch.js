@@ -58,6 +58,10 @@ this.save(model);
 Cinch.js keeps the data model up to date, in sync with the DOM, so performing actions based on the latest data is almost too easy.
 For this reason getters are not needed - just access the same javascript object you populated your template with.
 
+## Groups
+Another thing templates handle really well is creating lists. Templates can create some HTML for each item in an array. But templates don't have any mechanism for *adding* or *removing* an individual item from the list. Cinch.js gives you that for free.
+Groups in Cinch.js can be a list of anything; simple links or instances of your most complex component. And of course, adding and removing not only updates the DOM, but also the original JavaScript array used to create the list in the first place.
+
 ## Architecture
 Cinch.js employs the excellent "Passive View" design pattern, encouraging the creation of components that consist of the following:
 1. Model - plain JavaScript object representing the data. Usually comes from the server in the form of JSON. Cinch.js keeps it up to date as the user and app interact with the DOM.
