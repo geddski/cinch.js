@@ -29,7 +29,7 @@ or
 this.setName("I love JS");
 ```
 
-These methods can be overriden at any time by simply defining the method yourself.
+These generic setter methods can be overriden at any time by simply defining the method yourself.
 
 ## Getters
 You used data to populate the DOM, and now the DOM is changing. The user is typing, clicking, dragging, dropping, hovering, swiping. Your app is updating, manipulating, moving, showing, hiding, validating.
@@ -44,7 +44,7 @@ var name = $(populatedTemplate).find('input.name').val();
 var email = $(populatedTemplate).find('input.email').val();
 var phone = $(populatedTemplate).find('input.phone').val();
 var wantsNewsletter = $(populatedTemplate).find('input.newsletter').attr('checked');
-var interets = [];
+var interests = [];
 $(populatedTemplate).find('div.interest.viewed').each(function(){
   interests.push($(this.find('.interest-name').text());
 });
@@ -58,14 +58,17 @@ this.save(model);
 ```
 
 Cinch.js keeps the data model up to date, in sync with the DOM, so performing actions based on the latest data is almost too easy.
-For this reason getters are not needed - just access the same javascript object you populated your template with.
+For this reason getters are not needed - just access the same javascript object you populated your template with. It's current. 
 
 ## Groups
-Another thing templates handle really well is creating lists. Templates can create some HTML for each item in an array. But templates don't have any mechanism for *adding* or *removing* an individual item from the list. Cinch.js gives you that for free.
+Another thing templates handle really well is creating lists. Templates can create some HTML for each item in an array. But templates don't have any mechanism for *adding* or *removing* an individual item from the list.
+Cinch.js gives you that for free.
+Some template solutions like jQuery Templates do have a means of updating a rendered template, but it has to re-render the entire template - so you lose all your event listeners and state changes. Not ideal.
 Groups in Cinch.js can be a list of anything; simple links or instances of your most complex component. And of course, adding and removing not only updates the DOM, but also the original JavaScript array used to create the list in the first place.
 
 ## Architecture
 Cinch.js employs the excellent "Passive View" design pattern, encouraging the creation of components that consist of the following:
+
 1. Model - plain JavaScript object representing the data. Usually comes from the server in the form of JSON. Cinch.js keeps it up to date as the user and app interact with the DOM.
 2. View - HTML populated by a template, with DOM element grips added by Cinch.js
 3. Controller - the brains of the component, the JavaScript object that is responsible for the View(DOM) and the underlying Model(data). All logic goes here.
