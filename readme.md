@@ -71,7 +71,7 @@ Cinch.js employs the excellent ["Passive View"](http://martinfowler.com/eaaDev/P
 
 1. Model - plain JavaScript object representing the data. Usually comes from the server in the form of JSON. Cinch.js keeps it up to date as the user and app interact with the DOM.
 2. View - HTML populated by a template, with DOM element grips added by Cinch.js
-3. Controller - the brains of the component, the JavaScript object that is responsible for the View(DOM) and the underlying Model(data). All logic goes here.
+3. Controller - the brains of the component, responsible for the View(DOM) and the underlying Model(data). All logic goes here.
 Cinch.js adds setters to this controller that update the View and the Model, keeping them in sync.
 When the user enters input, that input gets passed to these setters.
 
@@ -82,10 +82,10 @@ Consider this. Web apps basically consist of two things:
 2. UI CRUD
 
 CRUD? Isn't that a database concept? Yes but it applies here too:
-__C__reate -  Micro templates were made for this, populating your UI in a fast, flexible way.<br/>
-*R*ead - Stop abusing the DOM, let Cinch.js keep your model up to date for you. Read that. <br/>
-*U*pdate - Updating the UI is easy with the UI grips Cinch creates for you.<br/>
-*D*elete - Deleting elements is also easy with the UI gribs. Sure beats writing jQuery selectors all over the place.
+__C__reate -  Micro templates were made for this, populating your UI in a fast, flexible way. \n
+__R__ead - Stop abusing the DOM, let Cinch.js keep your model up to date for you. Read that. \n
+__U__pdate - Updating the UI is easy with the UI grips Cinch creates for you. \n
+__D__elete - Deleting elements is also easy with the UI gribs. Sure beats writing jQuery selectors all over the place.
 Micro templates cover the C in CRUD, Cinch.js handles the rest. 
 
 In case you forgot, JavaScript is a *dynamic* language. Let's take advantage of it. Why should a smart developer like *you* have write the tedious parts? Outsource them to Cinchland!
