@@ -1,0 +1,17 @@
+{
+  "author" : "Dave Geddes <davidcgeddes@gmail.com> http://twitter.com/geddesign",
+  "contributers" : [],
+  "name": "cinch.js",
+  "description": "Picks up where micro templates leave off",
+  "version": "0.1.0",
+  "homepage": "coming soon",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/geddesign/cinch.js.git"
+  },
+  "main": "cinch.js",
+  "keywords": ["Bind", "UI", "DOM", "Passive View"],
+  "dependencies": {
+    "jQuery": "1.6.2"
+  }
+}
