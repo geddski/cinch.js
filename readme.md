@@ -81,8 +81,8 @@ Consider this. Web apps basically consist of two things:
 1. Your brilliant logic
 2. UI CRUD
 
-CRUD? Isn't that a database concept? Yes but it applies here too:
-__C__reate -  Micro templates were made for this, populating your UI in a fast, flexible way.
+CRUD? Isn't that a database concept? Yes but it applies here too:  
+__C__reate -  Micro templates were made for this, populating your UI in a fast, flexible way.  
 __R__ead - Stop abusing the DOM, let Cinch.js keep your model up to date for you. Read that.
 __U__pdate - Updating the UI is easy with the UI grips Cinch creates for you.  
 __D__elete - Deleting elements is also easy with the UI gribs. Sure beats writing jQuery selectors all over the place.
