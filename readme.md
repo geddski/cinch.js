@@ -17,6 +17,8 @@ this.setName = function(name){
   //query the DOM every single time so it doesn't feel left out
   var element = $(populatedTemplate).find('input.name');
   element.val(name);
+  //if we wanted to keep the model up to date we'd have to do it manually (yawn)
+  model.name = name;
 };
 this.setName("Monotonous Work, Isn't It");
 ```
@@ -24,7 +26,7 @@ this.setName("Monotonous Work, Isn't It");
 or
 
 ```javascript
-this.setTitle("I love JS");
+this.setName("I love JS");
 ```
 
 These methods can be overriden at any time by simply defining the method yourself.
