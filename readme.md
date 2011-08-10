@@ -85,7 +85,7 @@ CRUD? Isn't that a database concept? Yes but it applies here too:
 __C__reate -  Micro templates were made for this, populating your UI in a fast, flexible way.  
 __R__ead - Read from the model, not the DOM. Cinch.js will keep it up to date for you.  
 __U__pdate - Updating the UI is easy with the UI grips Cinch creates for you.  
-__D__elete - Deleting elements is also easy with the UI grips. Sure beats writing jQuery selectors all over the place.
+__D__elete - Deleting elements is also easy with the UI grips. Sure beats writing jQuery selectors all over the place.  
 Micro templates cover the C in CRUD, Cinch.js handles the rest. 
 
 In case you forgot, JavaScript is a *dynamic* language. Let's take advantage of it. Why should a smart developer like you have write a ton of tedious UI code? Outsource that to Cinchland!
