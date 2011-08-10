@@ -11,6 +11,7 @@ You choose which elements of the populated template you want a grip on by simply
 
 ## Setters
 Cinch.js also generates generic setter methods that update both the DOM and the data model you populated your template with. What's the point? Well, which of the following would you rather do?
+
 ```javascript
 this.setName = function(name){
   //query the DOM every single time so it doesn't feel left out
@@ -19,10 +20,13 @@ this.setName = function(name){
 };
 this.setName("Monotonous Work, Isn't It");
 ```
+
 or
+
 ```javascript
 this.setTitle("I love JS");
 ```
+
 These methods can be overriden at any time by simply defining the method yourself.
 
 ## Getters
@@ -32,6 +36,7 @@ Most JavaScript web apps are built this way - relying entirely on the DOM to sto
 Aside from being incredibly expensive(slow), apps built this way are nearly impossible to test, difficult to maintain, and painful to develop.  
 
 Again, take your pick:
+
 ```javascript
 var name = $(populatedTemplate).find('input.name').val();
 var email = $(populatedTemplate).find('input.email').val();
@@ -43,10 +48,13 @@ $(populatedTemplate).find('div.interest.viewed').each(function(){
 });
 this.save(name, email, phone, wantsNewsletter, interests);
 ```
+
 or
+
 ```javascript
 this.save(model);
 ```
+
 Cinch.js keeps the data model up to date, in sync with the DOM, so performing actions based on the latest data is almost too easy.
 For this reason getters are not needed - just access the same javascript object you populated your template with.
 
