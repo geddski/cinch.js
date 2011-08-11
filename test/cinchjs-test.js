@@ -114,16 +114,46 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		equals(myController.view.message.text(), 'CUSTOM TITLE');
 	});
 
-	//todo
-	test("nested components", function(){
-		//delegate part of the model and part of the view to a dedicated component.
-		//the nested component has no idea its only working with a slice of the pie
-		//it uses cinch.js to keep its DOM and model up to date just like any component
-		//the parent's model stays up to date thanks to pass-by-reference
+	/**
+	 * Delegate part of the model and part of the view to a dedicated component.
+	 * A nested component has no idea its only working with a slice of the pie
+	 * it uses cinch.js to keep its DOM and model up to date just like any component
+	 * the parent's model stays up to date thanks to pass-by-reference
+	 */
+	asyncTest("nested components", function(){
+		require(['components/switcher/switcher'], function(Switcher){
+			var template = Handlebars.compile("<div>{{message}}<br/><div data-grip='isOn'/></div>");
+			var model = {
+				message: "Nested Switcher Component",
+				isOn: new Boolean(true)
+			};
+			var controller = {
+				//delegate part of the model and part of the view to a dedicated component.
+				switcher: new Switcher(model.isOn)
+			};
+			var view = cinch(model.isOn, template(model)).to(controller);
+
+			//insert the nested component's view
+			view.isOn.replaceWith(controller.switcher.view.root);
+
+			ok(controller.switcher.model.isOn === model.isOn, "nested component's model should reference the same object as the parent model");
+			equals(controller.switcher.model.isOn.valueOf(), true, "nested component's model should be set");
+			controller.switcher.setIsOn(false);
+			equals(controller.switcher.model.isOn.valueOf(), false, "nested component's model should be updated");
+
+			controller.switcher.on('switched', function(isOn){
+				equals(isOn, model.isOn, "parent and nested models should reference the same object, and update it")
+				start(); //start the async tests
+			});
+
+			//emulate a click on the nested component, which fires the custom event
+			controller.switcher.view.root.click();
+			$('body').append(view.root);
+		});
 	});
 
+	//todo databinding
 	
-	//todo test passing a string as the view instead of a view. cinch should create the view for you.
 
-
+	//todo control groups
 });

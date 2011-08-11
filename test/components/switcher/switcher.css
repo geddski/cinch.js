@@ -1,0 +1,45 @@
+/*-----switcher-----*/
+.switcher {
+	cursor: pointer;
+	display: inline-block;
+	position: relative;
+	width: 95px;
+	height: 28px;
+	background: yellow;
+	background: -moz-linear-gradient(top, #FDD463, #EFB217);
+	background: -webkit-gradient(linear, left top, left bottom, from(#FDD463), to(#EFB217));
+	text-shadow: 0 -1px 1px #FFFFFF;
+	border-radius: 4px;
+	font-size: 17px;
+}
+
+.switcher .slider {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 42px;
+	height: 26px;
+	background: #D8D9D9;
+	background: -moz-linear-gradient(top, #D8D9D9, #fff);
+	background: -webkit-gradient(linear, left top, left bottom, from(#D8D9D9), to(#fff));
+	border: 1px solid #939393;
+	border-radius: 4px;
+	box-shadow: 0px 1px 1px #fff inset;
+}
+
+.switcher .answer {
+	position: absolute;
+	top: 5px;
+	display: inline-block;
+	color: #000;
+	font-weight: bold;
+}
+
+.switcher .yes {
+	left: 10px;
+
+}
+
+.switcher .no {
+	left: 54px;
+}
