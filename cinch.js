@@ -6,11 +6,11 @@ define(['jQuery'], function() {
 	 */
 	function cinch(model, view) {
 		//var shared
-		
+
 		return {
 			view: view,
 			model: model,
-			to: function(controller){
+			to: function(controller) {
 				console.log('cinching model and view to the controller');
 			}
 		}
@@ -23,7 +23,23 @@ define(['jQuery'], function() {
 	cinch.grip = function(populatedHTML) {
 		console.log('you wants grips?');
 		//todo create grips
-		return $(populatedHTML);
+		var view = {
+			root: $(populatedHTML)
+		};
+		view.root.find('[data-grip]').andSelf().each(function() {
+			//exclude the root element if it doesn't have data-grip attribute
+			if ($(this).attr('data-grip')) {
+				//if view item already exists, add it to collection of grips
+				if (view[$(this).attr('data-grip')]) {
+					view[$(this).attr('data-grip')] = view[$(this).attr('data-grip')].add($(this));
+				}
+				//otherwise set it to the single grip
+				else { 
+					view[$(this).attr('data-grip')] = $(this);
+				}
+			}
+		});
+		return view;
 	};
 
 	return cinch;
