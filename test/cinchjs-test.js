@@ -51,6 +51,16 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		equals(view.message.html(), "<b>Important</b>", "view should have been updated as HTML");
 	});
 
+	test("syntax sugar: cinch will call grip if you haven't already. Allows usage in one line", function(){
+		var template = Handlebars.compile("<div data-grip='message'>{{message}}</div>");
+		var model = { message: "Hi There", id: 4 };
+		var controller = {};
+		var view = cinch(model, template(model)).to(controller).view;
+		controller.setMessage('mmm sugar');
+		equals(model.message, 'mmm sugar', "model should be updated");
+		equals(view.message.text(), 'mmm sugar', "view should be updated");
+	});
+
 	test("multiple grips with the same name should all get updated", function() {
 		var template = Handlebars.compile("<div><h1 data-grip='message'>{{message}}</h1><div data-grip='message'>{{message}}</div></div>");
 		var model = { message: "Hi There"};
@@ -103,8 +113,16 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		equals(myController.model.message, 'CUSTOM TITLE');
 		equals(myController.view.message.text(), 'CUSTOM TITLE');
 	});
-	
 
+	//todo
+	test("nested components", function(){
+		//delegate part of the model and part of the view to a dedicated component.
+		//the nested component has no idea its only working with a slice of the pie
+		//it uses cinch.js to keep its DOM and model up to date just like any component
+		//the parent's model stays up to date thanks to pass-by-reference
+	});
+
+	
 	//todo test passing a string as the view instead of a view. cinch should create the view for you.
 
 

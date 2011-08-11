@@ -6,8 +6,9 @@ define(['jQuery'], function() {
 	 */
 	function cinch(model, view) {
 		//var shared
-		//todo if view is a string grip it, return the view
-
+		//if view is a string, grip it
+		view = typeof view === 'string' ? cinch.grip(view): view;
+		
 		return {
 			view: view,
 			model: model,
@@ -37,6 +38,8 @@ define(['jQuery'], function() {
 						}
 					}
 				}
+				//return this object so that the view and/or model can be accessed. makes 1-line cinching possible.
+				return this;
 			}
 		}
 	}
@@ -46,9 +49,7 @@ define(['jQuery'], function() {
 	 * @param populatedHTML
 	 */
 	cinch.grip = function(populatedHTML) {
-		var view = {
-			root: $(populatedHTML)
-		};
+		var view = { root: $(populatedHTML) };
 		view.root.find('[data-grip]').andSelf().each(function() {
 			//exclude the root element if it doesn't have data-grip attribute
 			if ($(this).attr('data-grip')) {
