@@ -11,14 +11,14 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 	//setup/takedown
 	module("cinch.js", {
 		setup: function() {
-			
+
 		},
 		teardown: function() {
 
 		}
 	});
 
-	test("create grips on the interesting parts of the populated template", function(){
+	test("create grips on the interesting parts of the populated template", function() {
 		var simpleTemplate = Handlebars.compile("<div data-grip='message'>{{message}}</div>");
 		var model = { message: "Hi There" };
 		var populated = simpleTemplate(model);
@@ -33,7 +33,7 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		ok(view['undefined'] === undefined, 'root element should only become a grip if it has the data-grip property');
 	});
 
-	test("cinch a view and a model to a controller", function(){
+	test("cinch a view and a model to a controller", function() {
 		var simpleTemplate = Handlebars.compile("<div data-grip='message'>{{message}}</div>");
 		var model = { message: "Hi There", id: 4 };
 		var view = cinch.grip(simpleTemplate(model));
@@ -50,6 +50,19 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		equals(view.message.text(), "Important");
 		equals(view.message.html(), "<b>Important</b>", "view should have been updated as HTML");
 	});
+
+	test("multiple grips with the same name should all get updated", function() {
+		var template = Handlebars.compile("<div><h1 data-grip='message'>{{message}}</h1><div data-grip='message'>{{message}}</div></div>");
+		var model = { message: "Hi There"};
+		var view = cinch.grip(template(model));
+		var controller = {};
+		cinch(model, view).to(controller);
+		equals(view.message.length, 2, 'message grip should be a jQuery collection of the two elements');
+		controller.setMessage("both");
+		equals(view.message[0].innerHTML, "both");
+		equals(view.message[1].innerHTML, "both");
+	});
+	
 
 	//todo test passing a string as the view instead of a view. cinch should create the view for you.
 

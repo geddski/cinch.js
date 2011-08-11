@@ -68,16 +68,17 @@ define(['jQuery'], function() {
 	/**
 	 * set a grip's value in the view. used by the generated setters
 	 */
-	cinch._setGrip = function(domElement, value, as) {
+	cinch._setGrip = function(grip, value, as) {
+		//todo if grip points to multiple DOM elements, they may need to be updated separatly if different element types
 		//todo support setting attributes like css, class, etc
-		if (domElement.is('input')) {
+		if (grip.is('input')) {
 			//input fields
-			domElement.val(value);
+			grip.val(value);
 		}
 		else {
 			//everything else (divs, spans, headers, etc)
 			var attributeToChange = as || 'text';
-			domElement[attributeToChange](value);
+			grip[attributeToChange](value);
 		}
 	};
 
