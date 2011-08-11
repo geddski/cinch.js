@@ -62,6 +62,47 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		equals(view.message[0].innerHTML, "both");
 		equals(view.message[1].innerHTML, "both");
 	});
+
+	test("defining a setter on the controller overrides the generic setter made by cinch.js", function() {
+		var template = Handlebars.compile("<div data-grip='message'>{{message}}</div>");
+		var model = { message: "Hi There"};
+		var view = cinch.grip(template(model));
+		var controller = {
+			setMessage: function(value) {
+				model.message = value.toLowerCase();
+				view.message.html(value.toLowerCase());
+			}
+		};
+		cinch(model, view).to(controller);
+		controller.setMessage('Who Likes Caps?');
+		equals(model.message, "who likes caps?", "custom setter should have removed caps");
+		//redefine the custom setter and test again
+		controller.setMessage = function(value){
+			model.message = value.toUpperCase();
+			view.message.html(value.toUpperCase());
+		};
+		controller.setMessage("Who Likes Caps?");
+		equals(model.message, "WHO LIKES CAPS?", "custom setter should have added caps");
+	});
+
+	test("custom setter method defined in the controller's prototype", function() {
+		function MyController(model, populatedHTML) {
+			this.model = model;
+			this.view = cinch.grip(populatedHTML);
+			cinch(this.model, this.view).to(this);
+		}
+		MyController.prototype.setMessage = function(value) {
+			this.model.message = value.toUpperCase();
+			this.view.message.text(value.toUpperCase());
+		};
+		MyController.template = Handlebars.compile("<div data-grip='message'>{{message}}</div>");
+
+		var data = {message: "OOP FTW"};
+		var myController = new MyController(data, MyController.template(data));
+		myController.setMessage("Custom Title");
+		equals(myController.model.message, 'CUSTOM TITLE');
+		equals(myController.view.message.text(), 'CUSTOM TITLE');
+	});
 	
 
 	//todo test passing a string as the view instead of a view. cinch should create the view for you.
