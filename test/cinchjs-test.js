@@ -152,8 +152,53 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		});
 	});
 
-	//todo databinding
-	
+	test("databinding", function() {
+		var template = Handlebars.compile("<input type='text' data-grip='name' value='{{name}}'/>");
+		var model = {name: "James Bond"};
+		var controller = {};
+		var view = cinch(model, template(model)).to(controller);
+
+		//emulate user by putting new data into a form and firing the change event
+		view.name.val("007");
+		view.name.trigger('change');
+
+		//model and view should have the newly entered data
+		equals(model.name, "007", "model should be updated by the change event");
+
+		//custom setter
+		controller.setName = function(value) {
+			var caps = value.toUpperCase();
+			view.name.val(caps);
+			model.name = caps;
+		};
+
+		//test that custom setter gets called on event
+		view.name.val("Double Agent");
+		view.name.trigger('change');
+		equals(model.name, "DOUBLE AGENT", "model should be updated by the change event, using custom setter");
+	});
+
+	test("databinding with other event (keyup for example)", function() {
+		var template = Handlebars.compile("<input type='text' data-grip='name' value='{{name}}'/>");
+		var model = {name: "James Bond"};
+		var controller = {};
+		var view = cinch(model, template(model)).to(controller, {inputEvents: {'name': 'keyup'}});
+
+		//custom setter
+		controller.setName = function(value) {
+			var caps = value.toUpperCase();
+			view.name.val(caps);
+			model.name = caps;
+		};
+
+		//emulate user by putting new data into a form and firing the keyup event
+		view.name.val("j");
+		view.name.trigger('keyup');
+		equals(model.name, "J", "model should be updated by the keyup event");
+		view.name.val("jo");
+		view.name.trigger('keyup');
+		equals(model.name, "JO", "model should be updated by the keyup event");
+	});
 
 	//todo control groups
 });
