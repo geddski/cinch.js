@@ -33,5 +33,25 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		ok(view['undefined'] === undefined, 'root element should only become a grip if it has the data-grip property');
 	});
 
-	//todo cinch(model, view).to(this);
+	test("cinch a view and a model to a controller", function(){
+		var simpleTemplate = Handlebars.compile("<div data-grip='message'>{{message}}</div>");
+		var model = { message: "Hi There", id: 4 };
+		var view = cinch.grip(simpleTemplate(model));
+		var controller = {};
+		cinch(model, view).to(controller);
+		ok(typeof controller.setMessage === "function", "setMessage should be a function");
+		ok(typeof controller.setId === "undefined", "setId should NOT be a function because there is no grip for it");
+		controller.setMessage("I love JS");
+		equals(model.message, "I love JS", "model should have been updated");
+		equals(view.message.text(), "I love JS", "view should have been updated");
+		//set field as html (text by default)
+		controller.setMessage("<b>Important</b>", {as: 'html'});
+		equals(model.message, "<b>Important</b>", "model should have been updated");
+		equals(view.message.text(), "Important");
+		equals(view.message.html(), "<b>Important</b>", "view should have been updated as HTML");
+	});
+
+	//todo test passing a string as the view instead of a view. cinch should create the view for you.
+
+
 });
