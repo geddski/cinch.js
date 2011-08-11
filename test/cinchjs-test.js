@@ -55,7 +55,7 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		var template = Handlebars.compile("<div data-grip='message'>{{message}}</div>");
 		var model = { message: "Hi There", id: 4 };
 		var controller = {};
-		var view = cinch(model, template(model)).to(controller).view;
+		var view = cinch(model, template(model)).to(controller);
 		controller.setMessage('mmm sugar');
 		equals(model.message, 'mmm sugar', "model should be updated");
 		equals(view.message.text(), 'mmm sugar', "view should be updated");

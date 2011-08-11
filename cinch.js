@@ -38,8 +38,8 @@ define(['jQuery'], function() {
 						}
 					}
 				}
-				//return this object so that the view and/or model can be accessed. makes 1-line cinching possible.
-				return this;
+				//return the view so it can be assigned. makes 1-line cinching possible.
+				return this.view;
 			}
 		}
 	}
