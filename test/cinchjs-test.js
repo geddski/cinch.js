@@ -209,7 +209,7 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		//todo move to a plugin or into cinch.js?
 		var linkTemplate = Handlebars.compile("<a href='{{url}}'>{{name}}</a>");
 		Handlebars.registerPartial('link',linkTemplate);
-		var linksTemplate = Handlebars.compile("<ul data-grip='links'>{{#links}}{{> link}}{{/links}}</ul>");
+		var linksTemplate = Handlebars.compile("<ul data-group='links'>{{#links}}{{> link}}{{/links}}</ul>");
 		var model = {
 			links: [
 				{name: "Google", url: "http://google.com"},
@@ -251,7 +251,7 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 	asyncTest("group of components", function(){
 		require(['components/deliverable/deliverable'], function(Deliverable){
 			//1. populate the deliverables with a template then pass that html string to the group
-			var template = Handlebars.compile("<h1>{{project}}</h1><div data-grip='deliverables'>{{#deliverables}}{{> Deliverable}}{{/deliverables}}</div>");
+			var template = Handlebars.compile("<h1>{{project}}</h1><div data-group='deliverables'>{{#deliverables}}{{> Deliverable}}{{/deliverables}}</div>");
 			var model = {
 				project: "Project A",
 				deliverables: [
@@ -262,11 +262,7 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 				]
 			};
 			var controller = {};
-//			console.log('template(model)): ', template(model));
-			//todo BUG nested components' grips get added to the parent view. could have collisions all over.
-			//todo maybe use data-group instead of data-grip...for groups...
 			var view = cinch(model, template(model)).to(controller);
-			//todo should the view not have grips on these components' grips...
 			ok(view.name === undefined, "groups' grips should not be created in the parent view");
 			ok(view.status === undefined, "groups' grips should not be created in the parent view");
 
@@ -280,15 +276,15 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 			ok(deliverable instanceof Deliverable, "new instances of the component should have been created");
 			equals(typeof deliverable.view, "object", "view should have been created by cinch");
 			equals(typeof deliverable.view.root, "object", "view should have been created by cinch");
-//			console.log('deliverable.view: ', deliverable.view);
 
 			//add a new one
 			var newModel = {name: "Feature E", status: "On Schedule"};
 			controller.deliverables.add(newModel, Deliverable.template(newModel));
-			console.log('controller.deliverables: ', controller.deliverables);
 			equals(controller.deliverables.view.root.children().length, 5, "item should have been added to the group view");
 			equals(model.deliverables.length, 5, "item should have been added to the model");
 			equals(controller.deliverables.items.length, 5, "item should have been added to the items array of controllers");
+			var latest = controller.deliverables.items[4];
+			ok(latest instanceof Deliverable, "new instances of the component should have been created");
 
 			//remove one
 			var featureB = controller.deliverables.items[1];
@@ -297,12 +293,11 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 			equals(model.deliverables.length, 4, "item should have been removed from the model");
 			equals(controller.deliverables.items.length, 4, "item should have been removed from the items array of controllers");
 
-			console.log('view: ', view);
 
 			$('body').append(view.root);
 
 			//todo 2. let the component create its own html and use that
-			
+
 			start();
 		});
 	});

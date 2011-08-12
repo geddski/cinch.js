@@ -7,8 +7,10 @@ define(['jQuery'], function() {
 	function cinch(model, view) {
 		//var shared
 		//if view is a string or vanilla DOM element, grip it (turn it into a real view)
-		if(!view.isView){ view = cinch.grip(view); }
-		
+		if (!view.isView) {
+			view = cinch.grip(view);
+		}
+
 		return {
 			view: view,
 			model: model,
@@ -50,7 +52,8 @@ define(['jQuery'], function() {
 	 */
 	cinch.grip = function(populatedHTML) {
 		var view = { root: $(populatedHTML), isView: true };
-		view.root.find('[data-grip]').andSelf().each(function() {
+		//also exclude grips that belong to a group, they'll get gripped later.
+		view.root.find('[data-grip],[data-group]').andSelf().not('[data-group] [data-grip]').each(function() {
 			//exclude the root element if it doesn't have data-grip attribute
 			if ($(this).attr('data-grip')) {
 				//if view item already exists, add it to collection of grips
@@ -61,6 +64,10 @@ define(['jQuery'], function() {
 				else {
 					view[$(this).attr('data-grip')] = $(this);
 				}
+			}
+			//add group to the view
+			else if ($(this).attr('data-group')) {
+				view[$(this).attr('data-group')] = $(this);
 			}
 		});
 		return view;
@@ -84,32 +91,36 @@ define(['jQuery'], function() {
 	};
 
 
-	cinch.group = function(models, grip, callback){
+	cinch.group = function(models, grip, callback) {
 		//group is the controller for the group
 		var group = {
 			items: [],
 			view: {
 				root: grip
-			}
+			},
+			factory: callback
 		};
 
 		var views = grip.children();
 		for (var i = 0; i < models.length; i++) {
-			if (typeof callback === "function") {
-				group.items.push(callback(models[i], group.view.root.children()[i]));
-			}
-			else{
-				group.items.push({
-					view: {
-						root: views[i]
-					},
-					model: models[i]
-				});
-			}
-
+			createController(models[i], group.view.root.children()[i], group.factory);
 		}
 
-		group.add = function(model, html){
+		function createController(model, view, factory) {
+			if (typeof factory === "function") {
+				group.items.push(callback(model, view));
+			}
+			else {
+				group.items.push({
+					view: {
+						root: view
+					},
+					model: model
+				});
+			}
+		}
+
+		group.add = function(model, html) {
 			//todo maybe call grip on the html in case it has data-grips
 			html = $(html);
 			//add to model
@@ -118,15 +129,10 @@ define(['jQuery'], function() {
 			this.view.root.append(html);
 
 			//add to items
-			group.items.push({
-				view: {
-					root: html
-				},
-				model: model
-			})
+			createController(model, html, this.factory);
 		};
 
-		group.remove = function(item){
+		group.remove = function(item) {
 			//remove from model
 			models.splice(models.indexOf(item.model), 1);
 			//remove from view
@@ -137,110 +143,6 @@ define(['jQuery'], function() {
 
 		return group;
 	};
-	/**
-	 * create a group of components, with methods for adding/removing/replacing/updating
-	 * @param Component
-	 * @param modelArray
-	 * @param groupTemplate
-	 * @param callback - function for when the component needs a custom constructor
-	 * that's different from the conventional (model, populatedHTML)
-	 */
-//	cinch.group = function(Component, modelArray, html, callback) {
-//		//controller for the group of components
-//		var group = {
-//			instances: [],
-//			model: modelArray,
-//			view: {
-//				//create actual DOM elements out of the populated HTML if not already
-//				root: typeof html === 'string' ? $(html).children() : html.children()
-//			}
-//		};
-//
-//		/**
-//		 * add item to the group - inserts it into the DOM and the model
-//		 * @param controller
-//		 * @param modelName optional name if not using 'model' convention
-//		 * @param viewName optional name if not using 'view' convention
-//		 */
-//		group.add = function(controller, modelName, viewName) {
-//			var _this = this;
-//			var model = controller.model;
-//			var view = controller.view;
-//			if (modelName) {
-//				model = controller[modelName];
-//			}
-//			if (viewName) {
-//				view = controller[viewName];
-//			}
-//
-//			//add to model
-//			this.model.push(model);
-//
-//			//add to view
-//			this.view.root = this.view.root.add(view.root);
-//			this.view.root.parent().append(view.root);
-//
-//			//add controller to instances
-//			this.instances.push(controller);
-//
-//			//allow chaining
-//			return controller;
-//		};
-//
-//		/**
-//		 * remove item from the group - deletes it from the DOM and the model
-//		 * @param controller
-//		 * @param modelName optional name if not using 'model' convention
-//		 * @param viewName optional name if not using 'view' convention
-//		 */
-//		group.remove = function(controller, modelName, viewName) {
-//			var _this = this;
-//			var model = controller.model;
-//			var view = controller.view;
-//			if (modelName) {
-//				model = controller[modelName];
-//			}
-//			if (viewName) {
-//				view = controller[viewName];
-//			}
-//
-//			//remove from model
-//			this.model.splice(this.model.indexOf(model), 1);
-//
-//			//remove from view
-//			var index = $.inArray(view.root.get(0), this.view.root);
-//			this.view.root.splice(index, 1);
-//			view.root.remove();
-//
-//			//delete controller from instances
-//			this.instances.splice(this.instances.indexOf(controller), 1);
-//		};
-//
-//		//small break in execution so that the populated template can be inserted in the DOM without waiting for
-//		//the binding to finish. Should give a good performance increase.
-//		setTimeout(function() {
-//			createComponents();
-//		}, 0);
-//
-//		/**
-//		 * create instances of the components.
-//		 */
-//		function createComponents() {
-//			for (var i = 0; i < modelArray.length; i++) {
-//				//create new instance of the component, passing in the model and the populated HTML
-//				if (typeof callback === "function") {
-//					group.instances.push(callback(modelArray[i], group.view.root[i]));
-//				}
-//				else {
-//					//if no callback is provided call the conventional constructor.
-//					// convention: assume the first two params are the model and the populatedHTML
-//					group.instances.push(new Component(modelArray[i], group.view.root[i]));
-//				}
-//			}
-//		}
-//
-//		return group;
-//	};
 
 	//-----utility functions-----//
 	function capitaliseFirstLetter(string) {
