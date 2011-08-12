@@ -198,7 +198,112 @@ require(['cinch', 'jQuery', 'lib/qunit', 'lib/handlebars'], function(cinch) {
 		view.name.val("jo");
 		view.name.trigger('keyup');
 		equals(model.name, "JO", "model should be updated by the keyup event");
+//		$('body').append(view.root);
 	});
 
-	//todo control groups
+	/**
+	 * templates are fantastic at creating lists from an array, but provide no way to update that list and its underlying model.
+	 * cinch.js provides that functionality when you create a group
+	 */
+	test("simple groups", function(){
+		//todo move to a plugin or into cinch.js?
+		var linkTemplate = Handlebars.compile("<a href='{{url}}'>{{name}}</a>");
+		Handlebars.registerPartial('link',linkTemplate);
+		var linksTemplate = Handlebars.compile("<ul data-grip='links'>{{#links}}{{> link}}{{/links}}</ul>");
+		var model = {
+			links: [
+				{name: "Google", url: "http://google.com"},
+				{name: "Apple", url: "http://apple.com"},
+				{name: "Amazon", url: "http://amazon.com"}
+			] 
+		};
+
+		var controller = {};
+		var view = cinch(model, linksTemplate(model)).to(controller);
+
+		//turn the populated list of links into a group
+		controller.links = cinch.group(model.links, view.links);
+
+		//add a new one to the group
+		var newLink = {name: "Microsoft", url: "http://microsoft.com"};
+		controller.links.add(newLink, linkTemplate(newLink));
+		equals(controller.links.view.root.children().length, 4, "item should have been added to the group view");
+		equals(model.links.length, 4, "item should have been added to the model");
+		equals(controller.links.items.length, 4, "item should have been added to the items array of controllers");
+
+		var lastestLink = controller.links.items[3];
+		equals(lastestLink.model.name, "Microsoft", "model should be set");
+		equals(lastestLink.view.root.attr('href'), "http://microsoft.com", "view should be set");
+
+		//remove one from the group
+		var apple = controller.links.items[1];
+		controller.links.remove(apple);
+		equals(controller.links.view.root.children().length, 3, "item should have been removed from the group view");
+		equals(model.links.length, 3, "item should have been removed from the model");
+		equals(controller.links.items.length, 3, "item should have been removed from the items array of controllers");
+		
+		$('body').append(view.root);
+	});
+
+	/**
+	 * a group can be a collection of component instances
+	 */
+	asyncTest("group of components", function(){
+		require(['components/deliverable/deliverable'], function(Deliverable){
+			//1. populate the deliverables with a template then pass that html string to the group
+			var template = Handlebars.compile("<h1>{{project}}</h1><div data-grip='deliverables'>{{#deliverables}}{{> Deliverable}}{{/deliverables}}</div>");
+			var model = {
+				project: "Project A",
+				deliverables: [
+					{name: "Feature A", status: "On Schedule"},
+					{name: "Feature B", status: "Missed"},
+					{name: "Feature C", status: "Delivered"},
+					{name: "Feature D", status: "At Risk"}
+				]
+			};
+			var controller = {};
+//			console.log('template(model)): ', template(model));
+			//todo BUG nested components' grips get added to the parent view. could have collisions all over.
+			//todo maybe use data-group instead of data-grip...for groups...
+			var view = cinch(model, template(model)).to(controller);
+			//todo should the view not have grips on these components' grips...
+			ok(view.name === undefined, "groups' grips should not be created in the parent view");
+			ok(view.status === undefined, "groups' grips should not be created in the parent view");
+
+			controller.deliverables = cinch.group(model.deliverables, view.deliverables, function(model, html){
+				return new Deliverable(model, html);
+			});
+			equals(controller.deliverables.view.root.children().length, 4, "groups view should be setup");
+			equals(controller.deliverables.items.length, 4, "items should have been setup");
+
+			var deliverable = controller.deliverables.items[0];
+			ok(deliverable instanceof Deliverable, "new instances of the component should have been created");
+			equals(typeof deliverable.view, "object", "view should have been created by cinch");
+			equals(typeof deliverable.view.root, "object", "view should have been created by cinch");
+//			console.log('deliverable.view: ', deliverable.view);
+
+			//add a new one
+			var newModel = {name: "Feature E", status: "On Schedule"};
+			controller.deliverables.add(newModel, Deliverable.template(newModel));
+			console.log('controller.deliverables: ', controller.deliverables);
+			equals(controller.deliverables.view.root.children().length, 5, "item should have been added to the group view");
+			equals(model.deliverables.length, 5, "item should have been added to the model");
+			equals(controller.deliverables.items.length, 5, "item should have been added to the items array of controllers");
+
+			//remove one
+			var featureB = controller.deliverables.items[1];
+			controller.deliverables.remove(featureB);
+			equals(controller.deliverables.view.root.children().length, 4, "item should have been removed from the group view");
+			equals(model.deliverables.length, 4, "item should have been removed from the model");
+			equals(controller.deliverables.items.length, 4, "item should have been removed from the items array of controllers");
+
+			console.log('view: ', view);
+
+			$('body').append(view.root);
+
+			//todo 2. let the component create its own html and use that
+			
+			start();
+		});
+	});
 });
